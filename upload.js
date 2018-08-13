@@ -141,12 +141,17 @@ async function jsonCheck(lsJson) {
   const ls = await readdir(inPath);
   const lsJson = ls.filter(f => f.endsWith('.json'));
   if (await jsonCheck(lsJson)) {
+    let cnt = 0;
     for (let i in lsJson) {
       const jsonBuffer = await readFile(inPath + lsJson[i]);
       const jsonObj = JSON.parse(jsonBuffer);
       const imgFile = jsonObj.file;
       const fileBuffer = await readFile(inPath + imgFile);
       await handleRecord(fileBuffer, jsonObj);
+      cnt += 1;
+      if (cnt % 1000 == 0) {
+        console.log(`Parsed ${cnt} files. Last parsed file: ${lsJson[i]}`);
+      }
     }
   }
 })();
